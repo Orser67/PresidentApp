@@ -1,0 +1,1 @@
+<% response.sendRedirect("president/list"); %>
