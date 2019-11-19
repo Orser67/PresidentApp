@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	
+	<title>President Directory</title>
+</head>
+
+<body>
+
+<div class="container">
+	<h3>President Directory</h3>
+	<hr>
+	
+	<!-- "Add president" button with bootstrap class-->
+	<a th:href="@{/presidents/showFormForAdd}"
+		class="btn btn-primary btn-sm mb-3">
+		Add President
+	</a>
+		
+	<!-- President table -->	
+	<table class="table table-bordered table-striped">
+		<thead class="thead-dark">
+			<tr>
+			    <th>#</th>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Party</th>
+				<th>Term Start</th>
+				<th>Term End</th>
+				<th>Actions</th>
+				<th>Flip election</th>
+			</tr>
+		</thead>
+	
+		<tbody>
+			<tr th:each="tempPresident,iterator : ${presidents}">
+			    <td th:text="${iterator.index + 1}"/>
+				<td th:text="${tempPresident.firstName}"/>
+				<td th:text="${tempPresident.lastName}"/>
+				<td th:text="${tempPresident.party}"/>
+				<td th:text="${tempPresident.termStart}"/>
+				<td th:text="${tempPresident.termEnd}"/>
+				<td> 
+					<a th:href="@{/presidents/showFormForUpdate(presidentId=${tempPresident.id})}"
+					class="btn btn-info btn-sm">
+					Update
+					</a>
+					
+					<a th:href="@{/presidents/delete(presidentId=${tempPresident.id})}"
+					class="btn btn-danger btn-sm"
+					onclick="if (!(confirm('Are you sure you want to delete this president?'))) return false">
+					Delete
+					</a>
+				</td>
+				
+				<td> 
+					<div class="row" with="numberTerms=${tempPresident.getNumberTerms()}">
+					<div th:if="${tempPresident.firstTermNaturalStart()}">
+						<a th:href="@{/presidents/flipElection(startOfTerm=${tempPresident.termStart})}"
+						class="btn btn-info btn-sm"
+						th:text="${tempPresident.getElectionYearBeforeTerm(1)}">
+						</a>
+					</div>
+					
+					<div th:if="${tempPresident.numberTerms() >= 2}">
+						<a th:href="@{/presidents/flipElection(startOfTerm=${tempPresident.secondTermStart()})}"
+						class="btn btn-info btn-sm"
+						th:text="${tempPresident.getElectionYearBeforeTerm(2)}">
+						Flip
+						</a>
+					</div>
+					
+					<div th:if="${tempPresident.numberTerms() >= 3}">
+						<a th:href="@{/presidents/flipElection(startOfTerm=${tempPresident.thirdTermOrMoreStart(3)})}"
+						class="btn btn-info btn-sm"
+						th:text="${tempPresident.getElectionYearBeforeTerm(3)}">
+						</a>
+					</div>
+					
+					<div th:if="${tempPresident.numberTerms() >= 4}">
+						<a th:href="@{/presidents/flipElection(startOfTerm=${tempPresident.thirdTermOrMoreStart(4)})}"
+						class="btn btn-info btn-sm"
+						th:text="${tempPresident.getElectionYearBeforeTerm(4)}">
+						</a>
+					</div>
+					
+					</div>
+				</td>
+				
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+</body>
+
+</html>
