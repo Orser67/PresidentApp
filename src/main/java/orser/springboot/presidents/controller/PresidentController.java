@@ -68,10 +68,14 @@ public class PresidentController {
 	public String savePresident(@ModelAttribute("president") President thePresident) {
 		
 		// save the president
-		presidentService.save(thePresident);
+		if (presidentService.save(thePresident) == true) {
+			// use a redirect to prevent duplicate submissions
+			return "redirect:/presidents/list";
+		} else {
+			// send to error page
+			return "presidents/add-error";
+		}
 		
-		// use a redirect to prevent duplicate submissions
-		return "redirect:/presidents/list";
 	}
 	
 	@GetMapping("/delete")

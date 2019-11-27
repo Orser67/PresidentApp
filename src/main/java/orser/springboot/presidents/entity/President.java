@@ -255,6 +255,17 @@ public class President {
 		return resultCandidate;
 	}
 	
+	// tests for equality
+	public boolean equals(President tempPresident) {
+		if (this.getFirstName() == tempPresident.getFirstName() && this.getLastName() == tempPresident.getLastName() &&
+				this.getParty() == tempPresident.getParty() && this.termStart == tempPresident.getTermStart() 
+				&& this.getTermEnd() == tempPresident.getTermEnd()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/*
 	public static void main(String[] args) {
 		President washington = new President(1, "George", "Washington","None", LocalDate.of(1789, Month.APRIL, 30), LocalDate.of(1797, Month.MARCH, 4));

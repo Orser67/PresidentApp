@@ -1,6 +1,8 @@
 package orser.springboot.presidents.service;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,12 +57,52 @@ public class PresidentServiceImpl implements PresidentService {
 	}
 
 	@Override
-	public void save(President thePresident) {
-		// add code to disallow one-day-only presidents
+	public boolean save(President thePresident) {
+		boolean validPresident = true;
+		
+		// add code to disallow presidents who served less than two days
+		long daysElapsedInTerm = ChronoUnit.DAYS.between(thePresident.getTermStart(), thePresident.getTermEnd());
+				
+		if (daysElapsedInTerm < 1) {
+			validPresident = false;
+		}
 		
 		// add code to check if new president would override term of another president
+		if (overlapsWithAnother(thePresident) == true) {
+			validPresident = false;
+		}
 		
-		presidentRepository.save(thePresident);
+		if (validPresident == true) {
+			presidentRepository.save(thePresident);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean overlapsWithAnother(President thePresident) {
+		boolean result = false;
+		
+		List<President> overlapList = presidentRepository.findByTermInclusive(thePresident.getTermStart(), thePresident.getTermEnd());
+		
+		for (President tempPresident : overlapList) {
+			// skip if same president
+			if (thePresident.getId() == tempPresident.getId()) {
+				continue;
+			}
+			// if new president's term start is on or after an existing president's term start
+			else if (thePresident.getTermStart().isAfter(tempPresident.getTermStart()) || thePresident.getTermStart().equals(tempPresident.getTermStart())) {
+				// return false if new president's term start is before an existing president's term end
+				if (thePresident.getTermStart().isBefore(tempPresident.getTermEnd())) {
+					result = true;
+				}
+			} // return false if new president's term start comes before existing president's term start, but
+			  // new president's term end comes after existing president's term start
+			else if (thePresident.getTermEnd().isAfter(tempPresident.getTermStart())) {
+					return true;
+				}
+			}
+		return result;
 	}
 
 	@Override

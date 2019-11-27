@@ -9,6 +9,37 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	
+	<!-- Date validator; doesn't currently deal with leap years -->
+	<script>
+		function validateDates() {
+			// var dateFormat = /^\d{4}\/[01]\d\/[03]\d/
+			var dateFormat = /^\d{4}\/\d{2}\/\d{2}/
+			var listOfDays = [31,28,31,30,31,30,31,31,30,31,30,31];
+			
+			var startDateEntered = document.presForm.termStart.value;
+			var startMonthEntered = startDateEntered.substring(5,7);
+			var startDayEntered = startDateEntered.substring(8);
+			var validStart = true;
+			
+			if (!startDateEntered.match(dateFormat)) {
+				validStart = false;	
+			} else if (startMonthEntered < 1 && startMonthEntered > 12) {
+				validStart = false;
+			} else {
+				var daysInMonth = listOfDays[startMonthEntered - 1];
+				if (startDayEntered > daysInMonth) {
+					validStart = false;
+				}
+			}
+		
+			if (validStart == false) {	
+				alert("Please enter a valid term start date");
+				document.presForm.termStart.focus();
+				return false;
+			}
+		}
+	</script>
+	
 	<title>Save President</title>
 </head>
 
@@ -21,26 +52,31 @@
 		
 		<p class="h4 mb-4">Save President</p>
 		
-		<form action="#" th:action="@{/presidents/save}"
+		<form name="presForm" onsubmit="return validateDates()" action="#" th:action="@{/presidents/save}"
 						 th:object="${president}" method="POST">
 		
 			<!-- hidden form field that contains id -->
 			<input type="hidden" th:field="*{id}" />
-		
-			<input type="text" th:field="*{firstName}"
+			
+			First name:<br/>
+			<input type="text" required th:field="*{firstName}"
 				class="form-control mb-4 col-4" placeholder="First name">
-					
-			<input type="text" th:field="*{lastName}"
+			
+			Last name:<br/>		
+			<input type="text" required th:field="*{lastName}"
 				class="form-control mb-4 col-4" placeholder="Last name">
-					
-			<input type="text" th:field="*{party}"
+			
+			Party:<br/>		
+			<input type="text" required th:field="*{party}"
 				class="form-control mb-4 col-4" placeholder="Party">
 				
-			<input type="text" th:field="*{termStart}"
+			Term start (yyyy/mm/dd):<br/>
+			<input type="text" required name="termStart" th:field="*{termStart}"
 				class="form-control mb-4 col-4" placeholder="Start of term">	
-				
-			<input type="text" th:field="*{termEnd}"
-				class="form-control mb-4 col-4" placeholder="End of term">	
+			
+			Term end (yyyy/mm/dd):<br/>	
+			<input type="text" required name="termEnd" th:field="*{termEnd}"
+				class="form-control mb-4 col-4" placeholder="End of term">
 					
 			<button type="submit" class="btn btn-info col-2">Save</button>
 		</form>

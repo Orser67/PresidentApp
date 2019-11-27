@@ -14,7 +14,7 @@ public interface PresidentService {
 	
 	public President findByTermStart(LocalDate termStart);
 	
-	public void save(President theEmployee);
+	public boolean save(President theEmployee);
 	
 	public void deleteById(int theId);
 	
